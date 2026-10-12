@@ -1,0 +1,3 @@
+schematic/old[0-9]*/*
+*.log
+*.raw
