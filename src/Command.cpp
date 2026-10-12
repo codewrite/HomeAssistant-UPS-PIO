@@ -3,7 +3,7 @@
 
 String _commandAccumulator;
 
-Command::Command(char* commandName, commandFunctionPtr commandFn)
+Command::Command(const char* commandName, commandFunctionPtr commandFn)
 {
   _commandName = commandName;
   _commandFn = commandFn;

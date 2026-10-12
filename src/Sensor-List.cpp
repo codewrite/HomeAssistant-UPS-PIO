@@ -27,20 +27,19 @@ void ReadSensors()
 
 void ReportSensors()
 {
-  char buf[30];
-  StaticJsonDocument<100> jsonBuffer;
+  JsonDocument jsonDoc;
 
   if (lightLevelAccCount==0) ReadSensors();
 
-  jsonBuffer["lightlevel"] = lightLevelAccumulator / lightLevelAccCount;
+  jsonDoc["lightlevel"] = lightLevelAccumulator / lightLevelAccCount;
   lightLevelAccumulator = 0;
   lightLevelAccCount = 0;
-  jsonBuffer["Sensor"]["Interval"] = sensorReadInterval;
-  jsonBuffer["Sensor"]["AvgSamples"] = sensorAvgCount;
-  jsonBuffer["LedBlink"]["Interval"] = LedBlinkInterval;
-  jsonBuffer["LedBlink"]["Duration"] = LedBlinkDuration;
+  jsonDoc["Sensor"]["Interval"] = sensorReadInterval;
+  jsonDoc["Sensor"]["AvgSamples"] = sensorAvgCount;
+  jsonDoc["LedBlink"]["Interval"] = LedBlinkInterval;
+  jsonDoc["LedBlink"]["Duration"] = LedBlinkDuration;
 
-  serializeJson(jsonBuffer, Serial);
+  serializeJson(jsonDoc, Serial);
   Serial.println();
 }
 
