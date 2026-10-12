@@ -1,19 +1,42 @@
 #include <Arduino.h>
 #include <ArduinoJson.h>
+#include <Wire.h>
+#include "Adafruit_INA3221.h"
 #include "Utils.h"
 #include "Sensor-List.h"
 
-extern int LedBlinkInterval;
-extern int LedBlinkDuration;
+extern bool PowerOn;
+extern bool Charging;
+extern bool VccOn;
+extern bool BatteryOutOn;
+extern bool BatteryInOn;
+
+Adafruit_INA3221 ina3221;
 
 int sensorReadInterval = 1000;
 int sensorAvgCount = 30;
 int SensorReportInterval = sensorAvgCount * sensorReadInterval;
-long lightLevelAccumulator = 0;
-int lightLevelAccCount = 0;
+long piVoltageAccumulator = 0;
+long supplyVoltageAccumulator = 0;
+long supplyCurrentAccumulator = 0;
+long batteryVoltageAccumulator = 0;
+long batteryCurrentAccumulator = 0;
+int AccCount = 0;
 
 Task ReadSensorTask(sensorReadInterval, ReadSensors);
 Task ReportSensorTask(SensorReportInterval, ReportSensors);
+
+void Sensor_Init()
+{
+  if (!ina3221.begin(0x40, &Wire))       // can use other I2C addresses or buses
+  {
+    Serial.println("Failed to find INA3221 chip");
+    for (uint8_t i = 0; i < 3; i++)
+      ina3221.setShuntResistance(i, 0.1);
+  }
+  else
+    Serial.println("INA3221 Found!");
+}
 
 //***********************
 // Task Methods
@@ -21,23 +44,38 @@ Task ReportSensorTask(SensorReportInterval, ReportSensors);
 
 void ReadSensors()
 {
-  lightLevelAccumulator += analogRead(A0);
-  lightLevelAccCount++;
+  piVoltageAccumulator += analogRead(A0) * 100 * 1.22 * 5 / 1024;       // 1 = 10mV
+  AccCount++;
+  supplyVoltageAccumulator += ina3221.getBusVoltage(1) * 100;      // 1 = 10mV
+  supplyCurrentAccumulator += ina3221.getCurrentAmps(1) * 10000;   // 1 = 100uA
+  batteryVoltageAccumulator += ina3221.getBusVoltage(2) * 100;     // 1 = 10mV
+  batteryCurrentAccumulator += ina3221.getCurrentAmps(2) * 10000;  // 1 = 100uA
 }
 
 void ReportSensors()
 {
   JsonDocument jsonDoc;
 
-  if (lightLevelAccCount==0) ReadSensors();
+  if (AccCount==0) ReadSensors();
 
-  jsonDoc["lightlevel"] = lightLevelAccumulator / lightLevelAccCount;
-  lightLevelAccumulator = 0;
-  lightLevelAccCount = 0;
+  jsonDoc["pi-v"] = piVoltageAccumulator / AccCount;
+  jsonDoc["vcc-v"] = supplyVoltageAccumulator / AccCount;
+  jsonDoc["vcc-a"] = supplyCurrentAccumulator / AccCount;
+  jsonDoc["batt-v"] = batteryCurrentAccumulator / AccCount;
+  jsonDoc["batt-a"] = piVoltageAccumulator / AccCount;
+  piVoltageAccumulator = 0;
+  supplyVoltageAccumulator = 0;
+  supplyCurrentAccumulator = 0;
+  batteryVoltageAccumulator = 0;
+  batteryCurrentAccumulator = 0;
+  AccCount = 0;
   jsonDoc["Sensor"]["Interval"] = sensorReadInterval;
   jsonDoc["Sensor"]["AvgSamples"] = sensorAvgCount;
-  jsonDoc["LedBlink"]["Interval"] = LedBlinkInterval;
-  jsonDoc["LedBlink"]["Duration"] = LedBlinkDuration;
+  jsonDoc["Control"]["Power"] = PowerOn;
+  jsonDoc["Control"]["Charging"] = Charging;
+  jsonDoc["Switch"]["Vcc"] = VccOn;
+  jsonDoc["Switch"]["BatteryOut"] = BatteryOutOn;
+  jsonDoc["Switch"]["BatteryIn"] = BatteryInOn;
 
   serializeJson(jsonDoc, Serial);
   Serial.println();

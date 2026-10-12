@@ -6,6 +6,8 @@
 extern Task ReadSensorTask;
 extern Task ReportSensorTask;
 
+void Sensor_Init();
+
 //***********************
 // Task Methods
 //***********************

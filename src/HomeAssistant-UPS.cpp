@@ -26,6 +26,7 @@ void setup()
 {
   Serial.begin(115200);
   pinMode(2, OUTPUT);
+  Sensor_Init();
 }
 
 void loop()

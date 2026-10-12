@@ -5,6 +5,12 @@
 
 int LedBlinkInterval = 3000;
 int LedBlinkDuration = 10;
+bool PowerOn = true;
+bool Charging = false;
+
+bool VccOn = true;
+bool BatteryOutOn = true;
+bool BatteryInOn = false;
 
 Task BlinkLedTask(LedBlinkInterval, SetLED, LedBlinkDuration, ClearLED);
 
