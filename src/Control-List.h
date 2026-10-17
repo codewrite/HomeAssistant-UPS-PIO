@@ -3,19 +3,22 @@
 #include <Arduino.h>
 #include "Task.h"
 
-extern Task BlinkLedTask;
+extern int SupplyPower;
+extern int BatteryPower;
+extern int BatteryCharging;
+
+void Control_Init();
 
 //***********************
 // Task Methods
 //***********************
 
-void SetLED();
-void ClearLED();
-
 //***********************
 // Command Methods
 //***********************
 
-void UpdateLedDutyCycle(String args);
+void SetSupplyPower(String args);
+void SetBatteryPower(String args);
+void SetBatteryCharging(String args);
 
 #endif

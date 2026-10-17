@@ -9,15 +9,15 @@ long loopCount = 0;   //Test code
 Task* tasks[]
 {
   &ReadSensorTask,
-  &ReportSensorTask,
-  &BlinkLedTask
+  &ReportSensorTask
 };
-
 
 Command commands[]
 {
-  Command("sl", UpdateLedDutyCycle),
-  Command("ss", UpdateSensorDutyCycle)
+  Command("ss", UpdateSensorDutyCycle),
+  Command("sp", SetSupplyPower),
+  Command("sb", SetBatteryPower),
+  Command("sc", SetBatteryCharging)
 };
 
 const int NUM_COMMANDS = sizeof(commands)/sizeof(commands[0]);
@@ -25,8 +25,8 @@ const int NUM_COMMANDS = sizeof(commands)/sizeof(commands[0]);
 void setup()
 {
   Serial.begin(115200);
-  pinMode(2, OUTPUT);
   Sensor_Init();
+  Control_Init();
 }
 
 void loop()
