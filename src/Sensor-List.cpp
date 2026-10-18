@@ -26,11 +26,15 @@ void Sensor_Init()
   if (!ina3221.begin(0x40, &Wire))       // can use other I2C addresses or buses
   {
     Serial.println("Failed to find INA3221 chip");
-    for (uint8_t i = 0; i < 3; i++)
-      ina3221.setShuntResistance(i, 0.1);
   }
   else
+  {
     Serial.println("INA3221 Found!");
+    for (uint8_t i = 0; i < 3; i++)
+    {
+      ina3221.setShuntResistance(i, 0.1);
+    }
+  }
 }
 
 //***********************
@@ -42,9 +46,10 @@ void ReadSensors()
   piVoltageAccumulator += analogRead(A1) * (150.0 + 47.0) / 150.0 * 4.7 / 1024.0 * 1000.0;       // 1 = 1mV
   AccCount++;
   supplyVoltageAccumulator += ina3221.getBusVoltage(0) * 1000.0;     // 1 = 1mV
-  supplyCurrentAccumulator += ina3221.getCurrentAmps(0) * 1000.0;    // 1 = 1mA
+  supplyCurrentAccumulator += ina3221.getCurrentAmps(0) * 10000.0;    // 1 = 1mA
   batteryVoltageAccumulator += ina3221.getBusVoltage(1) * 1000.0;    // 1 = 1mV
-  batteryCurrentAccumulator += ina3221.getCurrentAmps(1) * 1000.0;   // 1 = 1mA
+  batteryCurrentAccumulator += ina3221.getCurrentAmps(1) * 10000.0;   // 1 = 1mA
+  Serial.println(ina3221.getShuntVoltage(0),6);
 }
 
 void ReportSensors()
