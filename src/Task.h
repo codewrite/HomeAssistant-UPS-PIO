@@ -13,11 +13,11 @@ class Task
     void SetInterval(long interval);
     void SetDuration(long duration);
   private:
-    long _interval;
-    long _duration;
+    unsigned long _interval;
+    unsigned long _duration;
     taskFunctionPtr _taskFn;
     taskFunctionPtr _durationFn;
-    long _prevMillis;
-    long _durationTime;
+    unsigned long _prevMillis;
+    bool _taskStarted;
 };
 #endif

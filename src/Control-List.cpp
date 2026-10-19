@@ -6,6 +6,9 @@
 int SupplyPower = 3;
 int BatteryPower = 2;
 int BatteryCharging = 4;
+int ControlOneSecondTickInterval = 1000;
+
+Task ControlOneSecondTickTask(ControlOneSecondTickInterval, ControlOneSecondTick);
 
 void Control_Init()
 {
@@ -20,6 +23,11 @@ void Control_Init()
 //***********************
 // Task Methods
 //***********************
+
+void ControlOneSecondTick()
+{
+
+}
 
 //***********************
 // Command Methods

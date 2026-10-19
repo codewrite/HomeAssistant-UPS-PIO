@@ -3,6 +3,8 @@
 #include <Arduino.h>
 #include "Task.h"
 
+extern Task ControlOneSecondTickTask;
+
 extern int SupplyPower;
 extern int BatteryPower;
 extern int BatteryCharging;
@@ -12,6 +14,8 @@ void Control_Init();
 //***********************
 // Task Methods
 //***********************
+
+void ControlOneSecondTick();
 
 //***********************
 // Command Methods

@@ -8,6 +8,7 @@ long loopCount = 0;   //Test code
 
 Task* tasks[]
 {
+  &ControlOneSecondTickTask,
   &ReadSensorTask,
   &ReportSensorTask
 };

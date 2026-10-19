@@ -1,4 +1,5 @@
 #include <Arduino.h>
+#include <limits.h>
 #include "Task.h"
 
 Task::Task(int interval, taskFunctionPtr taskFn, int duration, durationFunctionPtr durationFn)
@@ -8,24 +9,32 @@ Task::Task(int interval, taskFunctionPtr taskFn, int duration, durationFunctionP
   _taskFn = taskFn;
   _durationFn = durationFn;
   _prevMillis = millis();
-  _durationTime = -1;
+  _taskStarted = false;
 }
 
 void Task::Run()
 {
-  long currentMillis = millis();
-  if (currentMillis - _prevMillis >= _interval)
+  unsigned long currentMillis = millis();
+  unsigned long delta = currentMillis >= _prevMillis ?
+                        currentMillis - _prevMillis :
+                        ULONG_MAX - _prevMillis + currentMillis + 1;
+  if (!_taskStarted)
   {
-    _taskFn();
-    _prevMillis = currentMillis;
-    if (_durationFn != NULL)
+    if (delta >= _interval)
     {
-      _durationTime = currentMillis + _duration;
+      _taskFn();
+      _prevMillis = currentMillis + delta - _interval;
+      _taskStarted = (_durationFn != NULL);
     }
   }
-  else if (_durationTime >= 0 && currentMillis >= _durationTime)
+  else //if (_durationFn != NULL)
   {
-    _durationFn();
+    if (delta >= _duration)
+    {
+      _durationFn();
+      _prevMillis = currentMillis + delta - _interval;
+      _taskStarted = false;
+    }
   }
 }
 
