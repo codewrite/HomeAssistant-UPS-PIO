@@ -21,7 +21,7 @@ long batteryVoltageAccumulator = 0;
 long ch2CurrentAccumulator = 0;
 long ch2VoltageAccumulator = 0;
 long batteryCurrentAccumulator = 0;
-int AccCount = 0;
+long AccCount = 0;
 
 Task ReadSensorTask(sensorReadInterval, ReadSensors);
 Task ReportSensorTask(SensorReportInterval, ReportSensors);
@@ -113,7 +113,7 @@ void ReportSensors()
 
 void UpdateSensorDutyCycle(String args)
 {
-  int n1, n2;
+  long n1, n2;
   Get2Numbers(args, n1, n2);
   if (n1 > 0 && n2 > 0)
   {

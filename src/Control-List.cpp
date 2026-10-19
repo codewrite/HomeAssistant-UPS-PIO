@@ -7,7 +7,7 @@ int SupplyPower = 3;
 int BatteryPower = 2;
 int BatteryCharging = 5;
 int ControlOneSecondTickInterval = 1000;
-int chargingRate = 0;
+long chargingRate = 0;
 
 Task ControlOneSecondTickTask(ControlOneSecondTickInterval, ControlOneSecondTick);
 
@@ -36,7 +36,7 @@ void ControlOneSecondTick()
 
 void SetSupplyPower(String args)
 {
-  int n1;
+  long n1;
   GetNumber(args, n1);
   digitalWrite(SupplyPower, n1>0 ? HIGH : LOW);
   ReportSensors();
@@ -44,7 +44,7 @@ void SetSupplyPower(String args)
 
 void SetBatteryPower(String args)
 {
-  int n1;
+  long n1;
   GetNumber(args, n1);
   digitalWrite(BatteryPower, n1>0 ? HIGH : LOW);
   ReportSensors();
@@ -52,7 +52,7 @@ void SetBatteryPower(String args)
 
 void SetBatteryCharging(String args)
 {
-  //int n1;
+  //long n1;
   GetNumber(args, chargingRate);
   //digitalWrite(BatteryCharging, n1>0 ? HIGH : LOW);
   analogWrite(BatteryCharging, chargingRate);
