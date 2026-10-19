@@ -23,7 +23,7 @@ void Task::Run()
     if (delta >= _interval)
     {
       _taskFn();
-      _prevMillis = currentMillis + delta - _interval;
+      _prevMillis = currentMillis;
       _taskStarted = (_durationFn != NULL);
     }
   }
@@ -32,7 +32,7 @@ void Task::Run()
     if (delta >= _duration)
     {
       _durationFn();
-      _prevMillis = currentMillis + delta - _interval;
+      _prevMillis = currentMillis;
       _taskStarted = false;
     }
   }

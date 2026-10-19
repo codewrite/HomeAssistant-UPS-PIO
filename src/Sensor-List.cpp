@@ -7,6 +7,8 @@
 #include "Sensor-List.h"
 
 Adafruit_INA3221 ina3221;
+const float MA_PER_V_OFFSET = 0.15;       // e.g. 15V will read 2.25mA @ zero current
+
 
 int sensorReadInterval = 1000;
 int sensorAvgCount = 30;
@@ -15,6 +17,8 @@ long piVoltageAccumulator = 0;
 long supplyVoltageAccumulator = 0;
 long supplyCurrentAccumulator = 0;
 long batteryVoltageAccumulator = 0;
+long ch2CurrentAccumulator = 0;
+long ch2VoltageAccumulator = 0;
 long batteryCurrentAccumulator = 0;
 int AccCount = 0;
 
@@ -37,6 +41,19 @@ void Sensor_Init()
   }
 }
 
+void Ina3221Read(int channel, float& mv, float& ma)
+{
+  float v = ina3221.getBusVoltage(channel);
+  ma = ina3221.getCurrentAmps(channel) * 1000.0 - v * MA_PER_V_OFFSET;
+  mv = v * 1000.0;
+  // Serial.print(channel);
+  // Serial.print(" ");
+  // Serial.print(mv);
+  // Serial.print(" ");
+  // Serial.print(ma);
+  // Serial.println();
+}
+
 //***********************
 // Task Methods
 //***********************
@@ -45,11 +62,17 @@ void ReadSensors()
 {
   piVoltageAccumulator += analogRead(A1) * (150.0 + 47.0) / 150.0 * 4.7 / 1024.0 * 1000.0;       // 1 = 1mV
   AccCount++;
-  supplyVoltageAccumulator += ina3221.getBusVoltage(0) * 1000.0;     // 1 = 1mV
-  supplyCurrentAccumulator += ina3221.getCurrentAmps(0) * 10000.0;    // 1 = 1mA
-  batteryVoltageAccumulator += ina3221.getBusVoltage(1) * 1000.0;    // 1 = 1mV
-  batteryCurrentAccumulator += ina3221.getCurrentAmps(1) * 10000.0;   // 1 = 1mA
-  Serial.println(ina3221.getShuntVoltage(0),6);
+  float ma, mv;
+  Ina3221Read(0,mv,ma);
+  supplyVoltageAccumulator += mv;        // 1 = 1mV
+  supplyCurrentAccumulator += ma * 10;   // 1 = 100uA
+  Ina3221Read(1,mv,ma);
+  batteryVoltageAccumulator += mv;       // 1 = 1mV
+  batteryCurrentAccumulator += ma * 10;  // 1 = 100uA
+  Ina3221Read(2,mv,ma);
+  ch2VoltageAccumulator += mv;           // 1 = 1mV
+  ch2CurrentAccumulator += ma * 10;      // 1 = 100uA
+  //Serial.println(ina3221.getShuntVoltage(0),6);
 }
 
 void ReportSensors()
@@ -63,11 +86,15 @@ void ReportSensors()
   jsonDoc["vcc"]["a"] = supplyCurrentAccumulator / AccCount;
   jsonDoc["bat"]["v"] = batteryVoltageAccumulator / AccCount;
   jsonDoc["bat"]["a"] = batteryCurrentAccumulator / AccCount;
+  jsonDoc["ch2"]["v"] = ch2VoltageAccumulator / AccCount;
+  jsonDoc["ch2"]["a"] = ch2CurrentAccumulator / AccCount;
   piVoltageAccumulator = 0;
   supplyVoltageAccumulator = 0;
   supplyCurrentAccumulator = 0;
   batteryVoltageAccumulator = 0;
   batteryCurrentAccumulator = 0;
+  ch2VoltageAccumulator = 0;
+  ch2CurrentAccumulator = 0;
   AccCount = 0;
   jsonDoc["Sensors"]["Interval"] = sensorReadInterval;
   jsonDoc["Sensors"]["AvgSamples"] = sensorAvgCount;
