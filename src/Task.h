@@ -8,7 +8,7 @@ typedef void(*durationFunctionPtr)();
 class Task
 {
   public:
-    Task(int interval, taskFunctionPtr taskFn, int duration = -1, durationFunctionPtr durationFn = NULL);
+    Task(unsigned long interval, taskFunctionPtr taskFn, unsigned long duration = 0, durationFunctionPtr durationFn = NULL);
     void Run();
     void SetInterval(long interval);
     void SetDuration(long duration);

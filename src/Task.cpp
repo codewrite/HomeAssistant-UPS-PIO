@@ -2,7 +2,7 @@
 #include <limits.h>
 #include "Task.h"
 
-Task::Task(int interval, taskFunctionPtr taskFn, int duration, durationFunctionPtr durationFn)
+Task::Task(unsigned long interval, taskFunctionPtr taskFn, unsigned long duration, durationFunctionPtr durationFn)
 {
   _interval = interval;
   _duration = duration;
