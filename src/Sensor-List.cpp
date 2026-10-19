@@ -6,9 +6,10 @@
 #include "Control-List.h"
 #include "Sensor-List.h"
 
+extern int chargingRate;
+
 Adafruit_INA3221 ina3221;
 const float MA_PER_V_OFFSET = 0.15;       // e.g. 15V will read 2.25mA @ zero current
-
 
 int sensorReadInterval = 1000;
 int sensorAvgCount = 30;
@@ -100,7 +101,7 @@ void ReportSensors()
   jsonDoc["Sensors"]["AvgSamples"] = sensorAvgCount;
   jsonDoc["Control"]["Power"] = digitalRead(SupplyPower);
   jsonDoc["Control"]["Battery"] = digitalRead(BatteryPower);
-  jsonDoc["Control"]["Charging"] = digitalRead(BatteryCharging);
+  jsonDoc["Control"]["Charging"] = chargingRate;
 
   serializeJson(jsonDoc, Serial);
   Serial.println();

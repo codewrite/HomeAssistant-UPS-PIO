@@ -5,8 +5,9 @@
 
 int SupplyPower = 3;
 int BatteryPower = 2;
-int BatteryCharging = 4;
+int BatteryCharging = 5;
 int ControlOneSecondTickInterval = 1000;
+int chargingRate = 0;
 
 Task ControlOneSecondTickTask(ControlOneSecondTickInterval, ControlOneSecondTick);
 
@@ -51,8 +52,9 @@ void SetBatteryPower(String args)
 
 void SetBatteryCharging(String args)
 {
-  int n1;
-  GetNumber(args, n1);
-  digitalWrite(BatteryCharging, n1>0 ? HIGH : LOW);
+  //int n1;
+  GetNumber(args, chargingRate);
+  //digitalWrite(BatteryCharging, n1>0 ? HIGH : LOW);
+  analogWrite(BatteryCharging, chargingRate);
   ReportSensors();
 }
