@@ -6,7 +6,7 @@
 int SupplyPower = 3;
 int BatteryPower = 2;
 int BatteryCharging = 5;
-int ControlOneSecondTickInterval = 1000;
+long ControlOneSecondTickInterval = 1000;
 long chargingRate = 0;
 
 Task ControlOneSecondTickTask(ControlOneSecondTickInterval, ControlOneSecondTick);

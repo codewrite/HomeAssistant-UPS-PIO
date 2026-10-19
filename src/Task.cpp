@@ -2,7 +2,7 @@
 #include <limits.h>
 #include "Task.h"
 
-Task::Task(unsigned long interval, taskFunctionPtr taskFn, unsigned long duration, durationFunctionPtr durationFn)
+Task::Task(long interval, taskFunctionPtr taskFn, long duration, durationFunctionPtr durationFn)
 {
   _interval = interval;
   _duration = duration;
@@ -15,9 +15,9 @@ Task::Task(unsigned long interval, taskFunctionPtr taskFn, unsigned long duratio
 void Task::Run()
 {
   unsigned long currentMillis = millis();
-  unsigned long delta = currentMillis >= _prevMillis ?
-                        currentMillis - _prevMillis :
-                        ULONG_MAX - _prevMillis + currentMillis + 1;
+  long delta = currentMillis >= _prevMillis ?
+               currentMillis - _prevMillis :
+               ULONG_MAX - _prevMillis + currentMillis + 1;
   if (!_taskStarted)
   {
     if (delta >= _interval)

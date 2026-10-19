@@ -8,13 +8,13 @@ typedef void(*durationFunctionPtr)();
 class Task
 {
   public:
-    Task(unsigned long interval, taskFunctionPtr taskFn, unsigned long duration = 0, durationFunctionPtr durationFn = NULL);
+    Task(long interval, taskFunctionPtr taskFn, long duration = 0, durationFunctionPtr durationFn = NULL);
     void Run();
     void SetInterval(long interval);
     void SetDuration(long duration);
   private:
-    unsigned long _interval;
-    unsigned long _duration;
+    long _interval;
+    long _duration;
     taskFunctionPtr _taskFn;
     taskFunctionPtr _durationFn;
     unsigned long _prevMillis;

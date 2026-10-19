@@ -6,14 +6,14 @@
 #include "Control-List.h"
 #include "Sensor-List.h"
 
-extern int chargingRate;
+extern long chargingRate;
 
 Adafruit_INA3221 ina3221;
 const float MA_PER_V_OFFSET = 0.15;       // e.g. 15V will read 2.25mA @ zero current
 
-int sensorReadInterval = 1000;
-int sensorAvgCount = 30;
-int SensorReportInterval = sensorAvgCount * sensorReadInterval;
+long sensorReadInterval = 1000;
+long sensorAvgCount = 30;
+long SensorReportInterval = sensorAvgCount * sensorReadInterval;
 long piVoltageAccumulator = 0;
 long supplyVoltageAccumulator = 0;
 long supplyCurrentAccumulator = 0;
