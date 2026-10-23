@@ -10,6 +10,7 @@ extern long chargingRate;
 
 Adafruit_INA3221 ina3221;
 const float MA_PER_V_OFFSET = 0.15;       // e.g. 15V will read 2.25mA @ zero current
+const float CURRENT_ADJUSTMENT = 0.99;    // multiply INA current reading to get more accurate value
 
 long sensorReadInterval = 1000;
 long sensorAvgCount = 30;
@@ -44,8 +45,11 @@ void Sensor_Init()
 
 void Ina3221Read(int channel, float& mv, float& ma)
 {
+  // Current reading from INA3221 is about 1% too high. Voltage is within 0.5%
+  // Current readings are affected by resistance of wiring.
+  // MOSFET ON resistance is about 45m ohms
   float v = ina3221.getBusVoltage(channel);
-  ma = ina3221.getCurrentAmps(channel) * 1000.0 - v * MA_PER_V_OFFSET;
+  ma = (ina3221.getCurrentAmps(channel) * 1000.0 - v * MA_PER_V_OFFSET) * CURRENT_ADJUSTMENT;
   mv = v * 1000.0;
   // Serial.print(channel);
   // Serial.print(" ");
@@ -78,6 +82,21 @@ void ReadSensors()
 
 void ReportSensors()
 {
+/*
+  long batVolt = batteryVoltageAccumulator / AccCount;
+  if (batVolt < 10500L)
+  {
+    digitalWrite(SupplyPower, HIGH);
+    chargingRate = 255;
+    analogWrite(BatteryCharging, chargingRate);
+  }
+  if (batVolt > 14000L)
+  {
+    digitalWrite(SupplyPower, LOW);
+    chargingRate = 0;
+    analogWrite(BatteryCharging, chargingRate);
+  }
+*/
   JsonDocument jsonDoc;
 
   if (AccCount==0) ReadSensors();
