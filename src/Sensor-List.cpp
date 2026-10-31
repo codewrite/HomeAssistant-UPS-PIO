@@ -24,6 +24,8 @@ long ch2VoltageAccumulator = 0;
 long batteryCurrentAccumulator = 0;
 long AccCount = 0;
 
+double battery_mAh = 0;
+
 Task ReadSensorTask(sensorReadInterval, ReadSensors);
 Task ReportSensorTask(SensorReportInterval, ReportSensors);
 
@@ -65,19 +67,27 @@ void Ina3221Read(int channel, float& mv, float& ma)
 
 void ReadSensors()
 {
-  piVoltageAccumulator += analogRead(A1) * (150.0 + 47.0) / 150.0 * 4.7 / 1024.0 * 1000.0;       // 1 = 1mV
+  piVoltageAccumulator += analogRead(A1) * (150.0 + 47.0) / 150.0 * 5.0 / 1024.0 * 1000.0;       // 1 = 1mV
   AccCount++;
   float ma, mv;
+
   Ina3221Read(0,mv,ma);
   supplyVoltageAccumulator += mv;        // 1 = 1mV
   supplyCurrentAccumulator += ma * 10;   // 1 = 100uA
+
   Ina3221Read(1,mv,ma);
   batteryVoltageAccumulator += mv;       // 1 = 1mV
   batteryCurrentAccumulator += ma * 10;  // 1 = 100uA
+
+  // Test code to check battery mAh
+  if (mv <= 10700) digitalWrite(SupplyPower, HIGH);
+  battery_mAh += (ma / 36.0);
+
   Ina3221Read(2,mv,ma);
   ch2VoltageAccumulator += mv;           // 1 = 1mV
   ch2CurrentAccumulator += ma * 10;      // 1 = 100uA
   //Serial.println(ina3221.getShuntVoltage(0),6);
+
 }
 
 void ReportSensors()
@@ -106,6 +116,7 @@ void ReportSensors()
   jsonDoc["vcc"]["a"] = supplyCurrentAccumulator / AccCount;
   jsonDoc["bat"]["v"] = batteryVoltageAccumulator / AccCount;
   jsonDoc["bat"]["a"] = batteryCurrentAccumulator / AccCount;
+  jsonDoc["bat"]["mah"] = battery_mAh / 1000.0;
   jsonDoc["ch2"]["v"] = ch2VoltageAccumulator / AccCount;
   jsonDoc["ch2"]["a"] = ch2CurrentAccumulator / AccCount;
   piVoltageAccumulator = 0;
