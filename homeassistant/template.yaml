@@ -1,0 +1,162 @@
+### template.yaml
+
+- sensor:
+  - name: Raspberry Pi Average Voltage
+    state: "{{ state_attr('sensor.serial_sensor', 'rpi').va }}"
+    unique_id: rpi_avg_voltage
+    unit_of_measurement: V
+- sensor:
+  - name: Raspberry Pi Maximum Voltage
+    state: "{{ state_attr('sensor.serial_sensor', 'rpi').vh }}"
+    unique_id: rpi_max_voltage
+    unit_of_measurement: V
+- sensor:
+  - name: Raspberry Pi Minimum Voltage
+    state: "{{ state_attr('sensor.serial_sensor', 'rpi').vl }}"
+    unique_id: rpi_min_voltage
+    unit_of_measurement: V
+- sensor:
+  - name: UPS Supply Average Voltage
+    state: "{{ state_attr('sensor.serial_sensor', 'vcc').va }}"
+    unique_id: ups_supply_avg_voltage
+    unit_of_measurement: V
+- sensor:
+  - name: UPS Supply Maximum Voltage
+    state: "{{ state_attr('sensor.serial_sensor', 'vcc').vh }}"
+    unique_id: ups_supply_max_voltage
+    unit_of_measurement: V
+- sensor:
+  - name: UPS Supply Minimum Voltage
+    state: "{{ state_attr('sensor.serial_sensor', 'vcc').vl }}"
+    unique_id: ups_supply_min_voltage
+    unit_of_measurement: V
+- sensor:
+  - name: UPS Supply Average Current
+    state: "{{ state_attr('sensor.serial_sensor', 'vcc').ma }}"
+    unique_id: ups_supply_avg_current
+    unit_of_measurement: mA
+- sensor:
+  - name: UPS Supply Maximum Current
+    state: "{{ state_attr('sensor.serial_sensor', 'vcc').mh }}"
+    unique_id: ups_supply_max_current
+    unit_of_measurement: mA
+- sensor:
+  - name: UPS Supply Minimum Current
+    state: "{{ state_attr('sensor.serial_sensor', 'vcc').ml }}"
+    unique_id: ups_supply_min_current
+    unit_of_measurement: mA
+- sensor:
+  - name: UPS Battery Average Voltage
+    state: "{{ state_attr('sensor.serial_sensor', 'bat').va }}"
+    unique_id: ups_battery_avg_voltage
+    unit_of_measurement: V
+- sensor:
+  - name: UPS Battery Maximum Voltage
+    state: "{{ state_attr('sensor.serial_sensor', 'bat').vh }}"
+    unique_id: ups_battery_max_voltage
+    unit_of_measurement: V
+- sensor:
+  - name: UPS Battery Minimum Voltage
+    state: "{{ state_attr('sensor.serial_sensor', 'bat').vl }}"
+    unique_id: ups_battery_min_voltage
+    unit_of_measurement: V
+- sensor:
+  - name: UPS Battery Average Current
+    state: "{{ state_attr('sensor.serial_sensor', 'bat').ma }}"
+    unique_id: ups_battery_avg_current
+    unit_of_measurement: mA
+- sensor:
+  - name: UPS Battery Maximum Current
+    state: "{{ state_attr('sensor.serial_sensor', 'bat').mh }}"
+    unique_id: ups_battery_max_current
+    unit_of_measurement: mA
+- sensor:
+  - name: UPS Battery Minimum Current
+    state: "{{ state_attr('sensor.serial_sensor', 'bat').ml }}"
+    unique_id: ups_battery_min_current
+    unit_of_measurement: mA
+- number:
+  - name: UPS Battery mAh
+    state: "{{ state_attr('sensor.serial_sensor', 'bat').mah }}"
+    unique_id: ups_battery_mAh
+    set_value:
+      - action: script.set_ups_mah
+        data:
+          mah: "{{ value }}"
+    step: 1
+    min: -1000
+    max: 6000
+    unit_of_measurement: mAh
+- number:
+  - name: Nano Sensor Interval
+    unique_id: nano_sensor_interval
+    state: "{{ state_attr('sensor.serial_sensor', 'Sensor').Interval }}"
+    set_value:
+      - action: script.set_sensor_interval
+        data:
+          interval: "{{ value }}"
+          samples: "{{ state_attr('sensor.serial_sensor', 'Sensor').AvgSamples }}"
+    step: 1
+    min: 100
+    max: 60000
+    unit_of_measurement: ms
+- number:
+  - name: Nano Sensor Average Samples
+    unique_id: nano_sensor_avg_samples
+    state: "{{ state_attr('sensor.serial_sensor', 'Sensor').AvgSamples }}"
+    set_value:
+      - action: script.set_sensor_interval
+        data:
+          interval: "{{ state_attr('sensor.serial_sensor', 'Sensor').Interval }}"
+          samples: "{{ value }}"
+    step: 1
+    min: 1
+    max: 60000
+- switch:
+  - name: UPS Supply On
+    unique_id: ups_supply_on
+    state: "{{ state_attr('sensor.serial_sensor', 'Control').Power | int > 0 }}"
+    turn_on:
+      - action: script.set_ups_supply
+        data:
+          enable: "1"
+    turn_off:
+      - action: script.set_ups_supply
+        data:
+          enable: "0"
+- switch:
+  - name: UPS Battery On
+    unique_id: ups_battery_on
+    state: "{{ state_attr('sensor.serial_sensor', 'Control').Battery | int > 0 }}"
+    turn_on:
+      - action: script.set_ups_battery
+        data:
+          enable: "1"
+    turn_off:
+      - action: script.set_ups_battery
+        data:
+          enable: "0"
+- switch:
+  - name: UPS Charging On
+    unique_id: ups_charging_on
+    state: "{{ state_attr('sensor.serial_sensor', 'Control').Charging | int > 0 }}"
+    turn_on:
+      - action: script.set_ups_charging
+        data:
+          enable: "1"
+    turn_off:
+      - action: script.set_ups_charging
+        data:
+          enable: "0"
+- switch:
+  - name: UPS Shutdown Now
+    unique_id: ups_shutdown_now
+    state: "{{ state_attr('sensor.serial_sensor', 'Control').ShutdownNow | int > 0 }}"
+    turn_on:
+      - action: script.set_ups_shutdown_now
+        data:
+          enable: "1"
+    turn_off:
+      - action: script.set_ups_shutdown_now
+        data:
+          enable: "0"

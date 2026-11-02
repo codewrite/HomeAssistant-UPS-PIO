@@ -29,6 +29,8 @@ void Control_Init()
 // 2. reapply power when safe to do so (if the battery appears to have enough charge).
 void BatteryControl()
 {
+  // Battery Voltage: 12.9 100%, 12.8 90%, 12.65 80%, 12.5 70%, 12.4 60%, 12.2 50%, 12.1 40%, 12.0 30%, 11.8 20%
+  // Battery Voltage charging: 13.65 100%
 
 }
 
@@ -69,8 +71,7 @@ void SetBattery_mAh(String args)
 
 void ShutdownPi(String args)
 {
-  byte n1;  // not used at the moment
+  byte n1;
   GetNumber(args, n1);
-  
-  pwrMon.shutdownNow = true;
+  pwrMon.shutdownNow = n1 > 0;
 }

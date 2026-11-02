@@ -72,6 +72,7 @@ void ReportSensors()
   jsonDoc["Control"]["Power"] = digitalRead(SupplyPowerPin);
   jsonDoc["Control"]["Battery"] = digitalRead(BatteryPowerPin);
   jsonDoc["Control"]["Charging"] = pwrMon.chargingRate;
+  jsonDoc["Control"]["ShutdownNow"] = pwrMon.shutdownNow ? 1 : 0;
 
   serializeJson(jsonDoc, Serial);
   Serial.println();

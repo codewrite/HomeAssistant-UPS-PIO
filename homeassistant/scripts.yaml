@@ -1,0 +1,49 @@
+set_sensor_interval:
+  alias: Set Sensor Interval
+  sequence:
+  - action: shell_command.set_sensor
+    metadata: {}
+    data:
+      interval: '{{ interval }}'
+      samples: '{{ samples }}'
+  mode: single
+set_ups_supply:
+  alias: Set UPS Supply
+  sequence:
+  - action: shell_command.set_ups_supply
+    metadata: {}
+    data:
+      enable: '{{ enable }}'
+  mode: single
+set_ups_battery:
+  alias: Set UPS Battery
+  sequence:
+  - action: shell_command.set_ups_battery
+    metadata: {}
+    data:
+      enable: '{{ enable }}'
+  mode: single
+set_ups_charging:
+  alias: Set UPS Charging
+  sequence:
+  - action: shell_command.set_ups_charging
+    metadata: {}
+    data:
+      enable: '{{ enable }}'
+  mode: single
+set_ups_mah:
+  alias: Set UPS mAh
+  sequence:
+  - action: shell_command.set_ups_mah
+    metadata: {}
+    data:
+      mah: '{{ mah }}'
+  mode: single
+set_ups_shutdown_now:
+  alias: Set UPS Shutdown Now
+  sequence:
+  - action: shell_command.set_ups_shutdown_now
+    metadata: {}
+    data:
+      enable: '{{ enable }}'
+  mode: single
