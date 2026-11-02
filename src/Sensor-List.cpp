@@ -44,37 +44,50 @@ void ReportSensors()
     analogWrite(BatteryCharging, chargingRate);
   }
 */
-  JsonDocument jsonDoc;
+  JsonDocument rpiDoc, vccDoc, batDoc, controlDoc;
 
   if (pwrMon.AccCount==0) ReadSensors();
 
-  jsonDoc["rpi"]["va"] = pwrMon.rpiVoltageAvg;
-  jsonDoc["rpi"]["vh"] = pwrMon.rpiVoltageMax;
-  jsonDoc["rpi"]["vl"] = pwrMon.rpiVoltageMin;
-  jsonDoc["vcc"]["va"] = pwrMon.supplyVoltageAvg;
-  jsonDoc["vcc"]["vh"] = pwrMon.supplyVoltageMax;
-  jsonDoc["vcc"]["vl"] = pwrMon.supplyVoltageMin;
-  jsonDoc["vcc"]["ma"] = pwrMon.supplyCurrentAvg;
-  jsonDoc["vcc"]["mh"] = pwrMon.supplyCurrentMax;
-  jsonDoc["vcc"]["ml"] = pwrMon.supplyCurrentMin;
-  jsonDoc["bat"]["va"] = pwrMon.batteryVoltageAvg;
-  jsonDoc["bat"]["vh"] = pwrMon.batteryVoltageMax;
-  jsonDoc["bat"]["vl"] = pwrMon.batteryVoltageMin;
-  jsonDoc["bat"]["ma"] = pwrMon.batteryCurrentAvg;
-  jsonDoc["bat"]["mh"] = pwrMon.batteryCurrentMax;
-  jsonDoc["bat"]["ml"] = pwrMon.batteryCurrentMin;
+  JsonObject rpi = rpiDoc["rpi"].to<JsonObject>();
+  rpi["va"] = pwrMon.rpiVoltageAvg;
+  rpi["vh"] = pwrMon.rpiVoltageMax;
+  rpi["vl"] = pwrMon.rpiVoltageMin;
+
+  JsonObject vcc = vccDoc["vcc"].to<JsonObject>();
+  vcc["va"] = pwrMon.supplyVoltageAvg;
+  vcc["vh"] = pwrMon.supplyVoltageMax;
+  vcc["vl"] = pwrMon.supplyVoltageMin;
+  vcc["ma"] = pwrMon.supplyCurrentAvg;
+  vcc["mh"] = pwrMon.supplyCurrentMax;
+  vcc["ml"] = pwrMon.supplyCurrentMin;
+
+  JsonObject bat = batDoc["bat"].to<JsonObject>();
+  bat["va"] = pwrMon.batteryVoltageAvg;
+  bat["vh"] = pwrMon.batteryVoltageMax;
+  bat["vl"] = pwrMon.batteryVoltageMin;
+  bat["ma"] = pwrMon.batteryCurrentAvg;
+  bat["mh"] = pwrMon.batteryCurrentMax;
+  bat["ml"] = pwrMon.batteryCurrentMin;
+  bat["mah"] = pwrMon.battery_mAh;
 
   pwrMon.Reset();
 
-  jsonDoc["bat"]["mah"] = pwrMon.battery_mAh;
-  jsonDoc["Sensors"]["Interval"] = sensorReadInterval;
-  jsonDoc["Sensors"]["AvgSamples"] = sensorAvgCount;
-  jsonDoc["Control"]["Power"] = digitalRead(SupplyPowerPin);
-  jsonDoc["Control"]["Battery"] = digitalRead(BatteryPowerPin);
-  jsonDoc["Control"]["Charging"] = pwrMon.chargingRate;
-  jsonDoc["Control"]["ShutdownNow"] = pwrMon.shutdownNow ? 1 : 0;
+  JsonObject sensors = controlDoc["Sensors"].to<JsonObject>();
+  sensors["Interval"] = sensorReadInterval;
+  sensors["AvgSamples"] = sensorAvgCount;
+  JsonObject control = controlDoc["Control"].to<JsonObject>();
+  control["Power"] = digitalRead(SupplyPowerPin);
+  control["Battery"] = digitalRead(BatteryPowerPin);
+  control["Charging"] = pwrMon.chargingRate;
+  control["ShutdownNow"] = pwrMon.shutdownNow ? 1 : 0;
 
-  serializeJson(jsonDoc, Serial);
+  serializeJson(rpiDoc, Serial);
+  Serial.println();
+  serializeJson(vccDoc, Serial);
+  Serial.println();
+  serializeJson(batDoc, Serial);
+  Serial.println();
+  serializeJson(controlDoc, Serial);
   Serial.println();
 }
 

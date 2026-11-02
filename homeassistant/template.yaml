@@ -90,12 +90,12 @@
 - number:
   - name: Nano Sensor Interval
     unique_id: nano_sensor_interval
-    state: "{{ state_attr('sensor.serial_sensor', 'Sensor').Interval }}"
+    state: "{{ state_attr('sensor.serial_sensor', 'Sensors').Interval }}"
     set_value:
       - action: script.set_sensor_interval
         data:
           interval: "{{ value }}"
-          samples: "{{ state_attr('sensor.serial_sensor', 'Sensor').AvgSamples }}"
+          samples: "{{ state_attr('sensor.serial_sensor', 'Sensors').AvgSamples }}"
     step: 1
     min: 100
     max: 60000
@@ -103,11 +103,11 @@
 - number:
   - name: Nano Sensor Average Samples
     unique_id: nano_sensor_avg_samples
-    state: "{{ state_attr('sensor.serial_sensor', 'Sensor').AvgSamples }}"
+    state: "{{ state_attr('sensor.serial_sensor', 'Sensors').AvgSamples }}"
     set_value:
       - action: script.set_sensor_interval
         data:
-          interval: "{{ state_attr('sensor.serial_sensor', 'Sensor').Interval }}"
+          interval: "{{ state_attr('sensor.serial_sensor', 'Sensors').Interval }}"
           samples: "{{ value }}"
     step: 1
     min: 1
