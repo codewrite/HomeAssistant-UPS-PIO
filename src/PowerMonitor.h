@@ -26,6 +26,9 @@ class PowerMonitor
     float rpiVoltageAvg;
     float rpiVoltageMax;
     float rpiVoltageMin;
+    float battery_mAh;
+    byte chargingRate = 0;
+    bool shutdownNow = false;
 //  private:
     long AccCount = 0;
 };

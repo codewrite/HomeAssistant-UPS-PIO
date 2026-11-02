@@ -3,11 +3,12 @@
 #include <Arduino.h>
 #include "Task.h"
 
-extern Task ControlOneSecondTickTask;
+// Pin definitions
+#define SupplyPowerPin 3
+#define BatteryPowerPin 2
+#define BatteryChargingPin 5
 
-extern int SupplyPower;
-extern int BatteryPower;
-extern int BatteryCharging;
+extern Task BatteryControlTask;
 
 void Control_Init();
 
@@ -15,7 +16,7 @@ void Control_Init();
 // Task Methods
 //***********************
 
-void ControlOneSecondTick();
+void BatteryControl();
 
 //***********************
 // Command Methods
@@ -24,5 +25,7 @@ void ControlOneSecondTick();
 void SetSupplyPower(String args);
 void SetBatteryPower(String args);
 void SetBatteryCharging(String args);
+void SetBattery_mAh(String args);
+void ShutdownPi(String args);
 
 #endif

@@ -4,6 +4,8 @@
 #include "Adafruit_INA3221.h"
 #include "PowerMonitor.h"
 
+extern long sensorReadInterval;
+
 Adafruit_INA3221 ina3221;
 const float MA_PER_V_OFFSET = 0.15;       // e.g. 15V will read 2.25mA @ zero current
 const float CURRENT_ADJUSTMENT = 0.99;    // multiply INA current reading to get more accurate value
@@ -36,7 +38,7 @@ void PowerMonitor::Init()
   else
   {
     Serial.println("INA3221 Found!");
-    for (uint8_t i = 0; i < 3; i++)
+    for (byte i = 0; i < 3; i++)
     {
       ina3221.setShuntResistance(i, 0.1);
     }
@@ -84,7 +86,7 @@ void PowerMonitor::Read()
   if (AccCount == 1)
   {
     batteryVoltageAvg = batteryVoltageMax = batteryVoltageMin = v;
-    supplyCurrentAvg = batteryCurrentMax = batteryCurrentMin = ma;
+    batteryCurrentAvg = batteryCurrentMax = batteryCurrentMin = ma;
   }
   else
   {
@@ -96,7 +98,7 @@ void PowerMonitor::Read()
     batteryCurrentMin = min(batteryCurrentMin, ma);
   }
 
-
+  battery_mAh -= batteryCurrentAvg * (sensorReadInterval / 1000.0) / 3600.0;
 }
 
 void PowerMonitor::Reset()
