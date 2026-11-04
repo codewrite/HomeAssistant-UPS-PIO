@@ -33,11 +33,11 @@ void PowerMonitor::Init()
 {
   if (!ina3221.begin(0x40, &Wire))       // can use other I2C addresses or buses
   {
-    Serial.println("Failed to find INA3221 chip");
+    //Serial.println("Failed to find INA3221 chip");
   }
   else
   {
-    Serial.println("INA3221 Found!");
+    //Serial.println("INA3221 Found!");
     for (byte i = 0; i < 3; i++)
     {
       ina3221.setShuntResistance(i, 0.1);

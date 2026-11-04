@@ -34,6 +34,7 @@ void setup()
   pwrMon.Init();
   Sensor_Init();
   Control_Init();
+  ReportSensors();
 }
 
 void loop()

@@ -23,8 +23,11 @@ void BatteryControl();
 //***********************
 
 void SetSupplyPower(String args);
+void SetSupplyPower(bool enable);
 void SetBatteryPower(String args);
+void SetBatteryPower(bool enable);
 void SetBatteryCharging(String args);
+void SetBatteryCharging(byte val);
 void SetBattery_mAh(String args);
 void ShutdownPi(String args);
 
