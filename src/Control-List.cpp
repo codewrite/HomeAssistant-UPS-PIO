@@ -8,6 +8,23 @@ extern PowerMonitor pwrMon;
 
 Task BatteryControlTask(1000, BatteryControl);
 
+struct ChargeElement
+{
+  byte currentCharge;
+  float voltage;
+  byte newCharge;
+};
+
+ChargeElement ChargeSet[] =
+{
+  { 240, 13.0, 128 },
+  { 96, 13.2, 32 },
+  { 16, 13.4, 1 },
+  { 0, 13.6, 0 }
+};
+
+const int NUM_CHG_SET = (sizeof(ChargeSet) / sizeof(ChargeSet[0]));
+
 void Control_Init()
 {
   pinMode(SupplyPowerPin, OUTPUT);
@@ -32,26 +49,40 @@ void BatteryControl()
   // Battery Voltage: 12.9 100%, 12.8 90%, 12.65 80%, 12.5 70%, 12.4 60%, 12.2 50%, 12.1 40%, 12.0 30%, 11.8 20%
   // Battery Voltage charging: 13.65 100%
 
-  // Scenario 1: Shutdown Requested
-  if (pwrMon.shutdownNow && pwrMon.supplyVoltageAvg < 10.0 && pwrMon.rpiVoltageAvg < 2.0)
+  if (pwrMon.shutdownNow)
   {
-    SetSupplyPower(false);
-    SetBatteryPower(false);
+    if (pwrMon.supplyVoltageAvg < 10.0)
+    {
+      if (pwrMon.rpiVoltageAvg < 2.0)
+      {
+        // Scenario 1: Shutdown Requested, supply is off, pi is shutdown
+        SetSupplyPower(false);
+        SetBatteryPower(false);
+      }
+    }
+    else
+    {
+      if (pwrMon.batteryVoltageAvg < 12.4)
+      {
+        // Scenario 2: Charge the battery after shutdown
+        SetBatteryCharging(255);
+      }
+      if (pwrMon.chargingRate == 0 || pwrMon.batteryVoltageAvg > 13.0)
+      {
+        // Scenario 3: Battery charged enough to startup
+        SetBatteryPower(true);
+        SetSupplyPower(true);
+        pwrMon.shutdownNow = false;
+      }
+    }
   }
-
-  // Scenario 2: Charge the battery after shutdown
-  if (pwrMon.shutdownNow && pwrMon.supplyVoltageAvg > 10.0 && pwrMon.batteryVoltageAvg < 12.6)
-  {
-    SetBatteryCharging(255);
-  }
-
-  // Scenario 3: Battery charged enough to startup
-  if (pwrMon.shutdownNow && pwrMon.supplyVoltageAvg > 10.0 && pwrMon.batteryVoltageAvg > 13.0)
-  {
-    SetBatteryPower(true);
-    SetSupplyPower(true);
-    pwrMon.shutdownNow = false;
-  }
+  // for (int i=0; i<NUM_CHG_SET; i++)
+  // {
+  //   if (pwrMon.chargingRate >= ChargeSet[i].currentCharge && pwrMon.batteryVoltageAvg >= ChargeSet[i].voltage)
+  //   {
+  //     SetBatteryCharging(ChargeSet[i].newCharge);   // Don't overcharge the battery
+  //   }
+  // }
 }
 
 //***********************
