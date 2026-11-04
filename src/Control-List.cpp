@@ -25,6 +25,8 @@ ChargeElement ChargeSet[] =
 
 const int NUM_CHG_SET = (sizeof(ChargeSet) / sizeof(ChargeSet[0]));
 
+bool inShutdown = false;
+
 void Control_Init()
 {
   pinMode(SupplyPowerPin, OUTPUT);
@@ -49,31 +51,30 @@ void BatteryControl()
   // Battery Voltage: 12.9 100%, 12.8 90%, 12.65 80%, 12.5 70%, 12.4 60%, 12.2 50%, 12.1 40%, 12.0 30%, 11.8 20%
   // Battery Voltage charging: 13.65 100%
 
-  if (pwrMon.shutdownNow)
+  if (pwrMon.supplyVoltageAvg < 10.0)
   {
-    if (pwrMon.supplyVoltageAvg < 10.0)
+    if (pwrMon.rpiVoltageAvg < 2.0 || pwrMon.shutdownNow)
     {
-      if (pwrMon.rpiVoltageAvg < 2.0)
-      {
-        // Scenario 1: Shutdown Requested, supply is off, pi is shutdown
-        SetSupplyPower(false);
-        SetBatteryPower(false);
-      }
+      // Scenario 1: Supply is off, pi is shutdown (or shutdown now requested)
+      SetSupplyPower(false);
+      SetBatteryPower(false);
+      inShutdown = true;
+      pwrMon.shutdownNow = false;
     }
-    else
+  }
+  else if (inShutdown)
+  {
+    if (pwrMon.batteryVoltageAvg < 12.4)
     {
-      if (pwrMon.batteryVoltageAvg < 12.4)
-      {
-        // Scenario 2: Charge the battery after shutdown
-        SetBatteryCharging(255);
-      }
-      if (pwrMon.chargingRate == 0 || pwrMon.batteryVoltageAvg > 13.0)
-      {
-        // Scenario 3: Battery charged enough to startup
-        SetBatteryPower(true);
-        SetSupplyPower(true);
-        pwrMon.shutdownNow = false;
-      }
+      // Scenario 2: Charge the battery after shutdown
+      SetBatteryCharging(255);
+    }
+    if (pwrMon.chargingRate == 0 || pwrMon.batteryVoltageAvg > 13.0)
+    {
+      // Scenario 3: Battery charged enough to startup
+      SetBatteryPower(true);
+      SetSupplyPower(true);
+      inShutdown = false;
     }
   }
   // for (int i=0; i<NUM_CHG_SET; i++)
