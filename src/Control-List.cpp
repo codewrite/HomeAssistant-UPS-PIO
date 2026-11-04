@@ -62,7 +62,7 @@ void BatteryControl()
       pwrMon.shutdownNow = false;
     }
   }
-  else if (inShutdown)
+  if (inShutdown && pwrMon.supplyVoltageAvg > 10.0)
   {
     if (pwrMon.batteryVoltageAvg < 12.4)
     {
