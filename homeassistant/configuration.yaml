@@ -1,6 +1,10 @@
 sensor:
   - platform: serial
-    serial_port: /dev/ttyUSB0
+    #serial_port: /dev/ttyUSB0
+    serial_port: /dev/serial/by-id/usb-1a86_USB2.0-Serial-if00-port0
+    baudrate: 115200
+    name: "Arduino Nano Serial"
+    # was 2000000
 
 shell_command:
   set_sensor: /config/nano-send-command.sh "ss" {{ interval }} {{ samples }}
