@@ -64,12 +64,12 @@ void BatteryControl()
   }
   if (inShutdown && pwrMon.supplyVoltageAvg > 10.0)
   {
-    if (pwrMon.batteryVoltageAvg < 12.4)
+    if (pwrMon.batteryVoltageAvg < 12.0)
     {
       // Scenario 2: Charge the battery after shutdown
       SetBatteryCharging(255);
     }
-    if (pwrMon.chargingRate == 0 || pwrMon.batteryVoltageAvg > 13.0)
+    if (pwrMon.chargingRate == 0 || pwrMon.batteryVoltageAvg > 12.4)
     {
       // Scenario 3: Battery charged enough to startup
       SetBatteryPower(true);
