@@ -25,8 +25,6 @@ ChargeElement ChargeSet[] =
 
 const int NUM_CHG_SET = (sizeof(ChargeSet) / sizeof(ChargeSet[0]));
 
-bool inShutdown = false;
-
 void Control_Init()
 {
   pinMode(SupplyPowerPin, OUTPUT);
@@ -53,16 +51,14 @@ void BatteryControl()
 
   if (pwrMon.supplyVoltageAvg < 10.0)
   {
-    if (pwrMon.rpiVoltageAvg < 2.0 || pwrMon.shutdownNow)
+    if (pwrMon.rpiVoltageAvg < 2.0)
     {
-      // Scenario 1: Supply is off, pi is shutdown (or shutdown now requested)
+      // Scenario 1: Supply is off, pi is shutdown
       SetSupplyPower(false);
       SetBatteryPower(false);
-      inShutdown = true;
-      pwrMon.shutdownNow = false;
     }
   }
-  if (inShutdown && pwrMon.supplyVoltageAvg > 10.0)
+  else //if (pwrMon.supplyVoltageAvg > 10.0)
   {
     if (pwrMon.batteryVoltageAvg < 12.0)
     {
@@ -74,7 +70,10 @@ void BatteryControl()
       // Scenario 3: Battery charged enough to startup
       SetBatteryPower(true);
       SetSupplyPower(true);
-      inShutdown = false;
+    }
+    if (pwrMon.chargingRate > 0 && pwrMon.batteryVoltageAvg >= 14.0)
+    {
+      SetBatteryCharging(0);
     }
   }
   // for (int i=0; i<NUM_CHG_SET; i++)
