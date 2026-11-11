@@ -9,6 +9,14 @@ extern long sensorReadInterval;
 Adafruit_INA3221 ina3221;
 const float MA_PER_V_OFFSET = 0.15;       // e.g. 15V will read 2.25mA @ zero current
 const float CURRENT_ADJUSTMENT = 0.99;    // multiply INA current reading to get more accurate value
+const float BATTERY_LEAKAGE_MA = 0.4;     // Self discharge of battery (in mA)
+const float MILLIS_PER_SEC = 1000.0;
+const float SEC_PER_HOUR = 3600.0;
+const float AMPS_TO_MILLIAMPS = 1000.0;
+const float RPI_VDIV_TOP = 47.0;          // Top of voltage divider (in k ohms)
+const float RPI_VDIV_BOTTOM = 150.0;      // Bottom of voltage divider (in k ohms)
+const float NANO_VCC = 5.0;
+const float ADC_MAX = 1024.0;
 
 void Ina3221Read(int channel, float& v, float& ma)
 {
@@ -16,7 +24,7 @@ void Ina3221Read(int channel, float& v, float& ma)
   // Current readings are affected by resistance of wiring.
   // MOSFET ON resistance is about 45m ohms
   v = ina3221.getBusVoltage(channel);
-  ma = (ina3221.getCurrentAmps(channel) * 1000.0 - v * MA_PER_V_OFFSET) * CURRENT_ADJUSTMENT;
+  ma = (ina3221.getCurrentAmps(channel) * AMPS_TO_MILLIAMPS - v * MA_PER_V_OFFSET) * CURRENT_ADJUSTMENT;
   // Serial.print(channel);
   // Serial.print(" ");
   // Serial.print(v);
@@ -49,7 +57,7 @@ void PowerMonitor::Read()
 {
   AccCount++;
 
-  float rpiVoltage = analogRead(A1) * (150.0 + 47.0) / 150.0 * 5.0 / 1024.0;
+  float rpiVoltage = analogRead(A1) * (RPI_VDIV_BOTTOM + RPI_VDIV_TOP) / RPI_VDIV_BOTTOM * NANO_VCC / ADC_MAX;
 
   if (AccCount == 1)
   {
@@ -98,7 +106,7 @@ void PowerMonitor::Read()
     batteryCurrentMin = min(batteryCurrentMin, ma);
   }
 
-  battery_mAh -= batteryCurrentAvg * (sensorReadInterval / 1000.0) / 3600.0;
+  battery_mAh -= (batteryCurrentAvg + BATTERY_LEAKAGE_MA) * (sensorReadInterval / MILLIS_PER_SEC) / SEC_PER_HOUR;
 }
 
 void PowerMonitor::Reset()
