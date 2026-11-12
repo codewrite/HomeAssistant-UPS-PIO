@@ -68,7 +68,8 @@ void ReportSensors()
   bat["ma"] = pwrMon.batteryCurrentAvg;
   bat["mh"] = pwrMon.batteryCurrentMax;
   bat["ml"] = pwrMon.batteryCurrentMin;
-  bat["mah"] = pwrMon.battery_mAh;
+  bat["mah_m"] = pwrMon.battery_mAh_measured;
+  bat["mah_c"] = pwrMon.battery_mAh_calculated;
 
   pwrMon.Reset();
 
@@ -79,7 +80,7 @@ void ReportSensors()
   control["Power"] = digitalRead(SupplyPowerPin);
   control["Battery"] = digitalRead(BatteryPowerPin);
   control["Charging"] = pwrMon.chargingRate;
-  control["ShutdownNow"] = pwrMon.shutdownNow ? 1 : 0;
+  control["AutoControlDisable"] = pwrMon.autoControlDisable ? 1 : 0;
 
   serializeJson(rpiDoc, Serial);
   Serial.println();

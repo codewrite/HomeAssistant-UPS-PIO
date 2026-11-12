@@ -23,7 +23,7 @@ Command commands[]
   Command("sb", SetBatteryPower),
   Command("sc", SetBatteryCharging),
   Command("smah", SetBattery_mAh),
-  Command("sdnow", ShutdownPi)
+  Command("sdauto", DisableAutoControl)
 };
 
 const int NUM_COMMANDS = sizeof(commands)/sizeof(commands[0]);
@@ -34,6 +34,7 @@ void setup()
   pwrMon.Init();
   Sensor_Init();
   Control_Init();
+  delay(100);
   ReportSensors();
 }
 

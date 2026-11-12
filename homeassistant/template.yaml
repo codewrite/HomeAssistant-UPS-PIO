@@ -86,17 +86,17 @@
       data:
         enable: 0
 
-  - name: "UPS Control Shutdown Now"
-    unique_id: ups_control_shutdown_now
+  - name: "UPS Auto Control Disable"
+    unique_id: ups_auto_control_disable
     state: >
       {% set data = trigger.to_state.state | replace("'", '"') | from_json %}
-      {{ data.ShutdownNow | default(this.state) }}
+      {{ data.AutoControlDisable | default(this.state) }}
     turn_on:
-    - action: script.set_ups_shutdown_now
+    - action: script.set_ups_auto_control_disable
       data:
         enable: 1
     turn_off:
-    - action: script.set_ups_shutdown_now
+    - action: script.set_ups_auto_control_disable
       data:
         enable: 0
   number:
@@ -108,10 +108,7 @@
     set_value:
       - action: script.set_ups_charging
         data:
-          enable: "{{ value }}"
-          samples: >
-             {% set data = trigger.to_state.state | replace("'", '"') | from_json %}
-             {{ data.charging | default(this.state) }}
+          pulsewidth: "{{ value }}"
     step: 1
     min: 0
     max: 255
@@ -121,24 +118,24 @@
     entity_id: sensor.serial_rpi
   sensor:
   - name: "Raspberry Pi Average Voltage"
+    unique_id: ups_rpi_avg_voltage
     state: >
       {% set data = trigger.to_state.state | replace("'", '"') | from_json %}
       {{ data.va | default(this.state) }}
-    unique_id: ups_rpi_avg_voltage
     unit_of_measurement: V
 
   - name: Raspberry Pi Maximum Voltage
+    unique_id: ups_rpi_max_voltage
     state: >
       {% set data = trigger.to_state.state | replace("'", '"') | from_json %}
       {{ data.vh | default(this.state) }}
-    unique_id: ups_rpi_max_voltage
     unit_of_measurement: V
 
   - name: "Raspberry Pi Minimum Voltage"
+    unique_id: ups_rpi_min_voltage
     state: >
       {% set data = trigger.to_state.state | replace("'", '"') | from_json %}
       {{ data.vl | default(this.state) }}
-    unique_id: ups_rpi_min_voltage
     unit_of_measurement: V
 
 - trigger:
@@ -146,45 +143,45 @@
     entity_id: sensor.serial_vcc
   sensor:
   - name: "UPS Supply Average Voltage"
+    unique_id: ups_supply_avg_voltage
     state: >
       {% set data = trigger.to_state.state | replace("'", '"') | from_json %}
       {{ data.va | default(this.state) }}
-    unique_id: ups_supply_avg_voltage
     unit_of_measurement: V
 
   - name: "UPS Supply Maximum Voltage"
+    unique_id: ups_supply_max_voltage
     state: >
       {% set data = trigger.to_state.state | replace("'", '"') | from_json %}
       {{ data.vh | default(this.state) }}
-    unique_id: ups_supply_max_voltage
     unit_of_measurement: V
 
   - name: "UPS Supply Minimum Voltage"
+    unique_id: ups_supply_min_voltage
     state: >
       {% set data = trigger.to_state.state | replace("'", '"') | from_json %}
       {{ data.vl | default(this.state) }}
-    unique_id: ups_supply_min_voltage
     unit_of_measurement: V
 
   - name: "UPS Supply Average Current"
+    unique_id: ups_supply_avg_current
     state: >
       {% set data = trigger.to_state.state | replace("'", '"') | from_json %}
       {{ data.ma | default(this.state) }}
-    unique_id: ups_supply_avg_current
     unit_of_measurement: mA
 
   - name: "UPS Supply Maximum Current"
+    unique_id: ups_supply_max_current
     state: >
       {% set data = trigger.to_state.state | replace("'", '"') | from_json %}
       {{ data.mh | default(this.state) }}
-    unique_id: ups_supply_max_current
     unit_of_measurement: mA
 
   - name: "UPS Supply Minimum Current"
+    unique_id: ups_supply_min_current
     state: >
       {% set data = trigger.to_state.state | replace("'", '"') | from_json %}
       {{ data.ml | default(this.state) }}
-    unique_id: ups_supply_min_current
     unit_of_measurement: mA
 
 - trigger:
@@ -192,54 +189,62 @@
     entity_id: sensor.serial_bat
   sensor:
   - name: "UPS Battery Average Voltage"
+    unique_id: ups_battery_avg_voltage
     state: >
       {% set data = trigger.to_state.state | replace("'", '"') | from_json %}
       {{ data.va | default(this.state) }}
-    unique_id: ups_battery_avg_voltage
     unit_of_measurement: V
 
   - name: "UPS Battery Maximum Voltage"
+    unique_id: ups_battery_max_voltage
     state: >
       {% set data = trigger.to_state.state | replace("'", '"') | from_json %}
       {{ data.vh | default(this.state) }}
-    unique_id: ups_battery_max_voltage
     unit_of_measurement: V
 
   - name: "UPS Battery Minimum Voltage"
+    unique_id: ups_battery_min_voltage
     state: >
       {% set data = trigger.to_state.state | replace("'", '"') | from_json %}
       {{ data.vl | default(this.state) }}
-    unique_id: ups_battery_min_voltage
     unit_of_measurement: V
 
   - name: "UPS Battery Average Current"
+    unique_id: ups_battery_avg_current
     state: >
       {% set data = trigger.to_state.state | replace("'", '"') | from_json %}
       {{ data.ma | default(this.state) }}
-    unique_id: ups_battery_avg_current
     unit_of_measurement: mA
 
   - name: "UPS Battery Maximum Current"
+    unique_id: ups_battery_max_current
     state: >
       {% set data = trigger.to_state.state | replace("'", '"') | from_json %}
       {{ data.mh | default(this.state) }}
-    unique_id: ups_battery_max_current
     unit_of_measurement: mA
 
   - name: "UPS Battery Minimum Current"
+    unique_id: ups_battery_min_current
     state: >
       {% set data = trigger.to_state.state | replace("'", '"') | from_json %}
       {{ data.ml | default(this.state) }}
-    unique_id: ups_battery_min_current
     unit_of_measurement: mA
-  number:
-  - name: "UPS Battery mAh"
-    unique_id: ups_battery_mah
+
+  - name: "UPS Battery mAh (calculated)"
+    unique_id: ups_battery_mah_calculated
     state: >
       {% set data = trigger.to_state.state | replace("'", '"') | from_json %}
-      {{ data.mah | default(this.state) }}
+      {{ data.mah_c | default(this.state) }}
+    unit_of_measurement: mAh
+
+  number:
+  - name: "UPS Battery mAh (measured)"
+    unique_id: ups_battery_mah_measured
+    state: >
+      {% set data = trigger.to_state.state | replace("'", '"') | from_json %}
+      {{ data.mah_m | default(this.state) }}
     set_value:
-      - action: script.set_ups_mah
+      - action: script.set_ups_mah_measured
         data:
           mah: "{{ value }}"
     step: 0.1

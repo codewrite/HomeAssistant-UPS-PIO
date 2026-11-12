@@ -17,6 +17,9 @@ const float RPI_VDIV_TOP = 47.0;          // Top of voltage divider (in k ohms)
 const float RPI_VDIV_BOTTOM = 150.0;      // Bottom of voltage divider (in k ohms)
 const float NANO_VCC = 5.0;
 const float ADC_MAX = 1024.0;
+const float BATTERY_MAH_MAX = 4000.0;
+const float MAH_INTERCEPT = 11.3;
+const float MAH_SLOPE = 0.64;             // percentage: 0-1 = 0-100%
 
 void Ina3221Read(int channel, float& v, float& ma)
 {
@@ -106,7 +109,8 @@ void PowerMonitor::Read()
     batteryCurrentMin = min(batteryCurrentMin, ma);
   }
 
-  battery_mAh -= (batteryCurrentAvg + BATTERY_LEAKAGE_MA) * (sensorReadInterval / MILLIS_PER_SEC) / SEC_PER_HOUR;
+  battery_mAh_measured -= (batteryCurrentAvg + BATTERY_LEAKAGE_MA) * (sensorReadInterval / MILLIS_PER_SEC) / SEC_PER_HOUR;
+  battery_mAh_calculated = (batteryVoltageAvg - MAH_INTERCEPT) * MAH_SLOPE * BATTERY_MAH_MAX;
 }
 
 void PowerMonitor::Reset()

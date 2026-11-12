@@ -29,6 +29,6 @@ void SetBatteryPower(bool enable);
 void SetBatteryCharging(String args);
 void SetBatteryCharging(byte val);
 void SetBattery_mAh(String args);
-void ShutdownPi(String args);
+void DisableAutoControl(String args);
 
 #endif

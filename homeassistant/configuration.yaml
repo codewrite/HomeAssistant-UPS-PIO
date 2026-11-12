@@ -10,8 +10,8 @@ shell_command:
   set_sensor: /config/nano-send-command.sh "ss" {{ interval }} {{ samples }}
   set_ups_supply: /config/nano-send-command.sh "sp" {{ enable }}
   set_ups_battery: /config/nano-send-command.sh "sb" {{ enable }}
-  set_ups_charging: /config/nano-send-command.sh "sc" {{ enable }}
+  set_ups_charging: /config/nano-send-command.sh "sc" {{ pulsewidth }}
   set_ups_mah: /config/nano-send-command.sh "smah" {{ mah }}
-  set_ups_shutdown_now: /config/nano-send-command.sh "sdnow" {{ enable }}
+  set_ups_auto_control_disable: /config/nano-send-command.sh "sdauto" {{ enable }}
 
 template: !include template.yaml

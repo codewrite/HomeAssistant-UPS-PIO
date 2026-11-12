@@ -29,9 +29,9 @@ set_ups_charging:
   - action: shell_command.set_ups_charging
     metadata: {}
     data:
-      enable: '{{ enable }}'
+      pulsewidth: '{{ pulsewidth }}'
   mode: single
-set_ups_mah:
+set_ups_mah_measured:
   alias: Set UPS mAh
   sequence:
   - action: shell_command.set_ups_mah
@@ -39,11 +39,18 @@ set_ups_mah:
     data:
       mah: '{{ mah }}'
   mode: single
-set_ups_shutdown_now:
-  alias: Set UPS Shutdown Now
+set_ups_auto_control_disable:
+  alias: Set UPS Auto Control Disable
   sequence:
-  - action: shell_command.set_ups_shutdown_now
+  - action: shell_command.set_ups_auto_control_disable
     metadata: {}
     data:
       enable: '{{ enable }}'
   mode: single
+ups_host_shutdown:
+  sequence:
+  - action: hassio.host_shutdown
+    metadata: {}
+    data: {}
+  alias: Shutdown System
+  description: ''

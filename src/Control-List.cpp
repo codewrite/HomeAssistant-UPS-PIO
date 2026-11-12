@@ -27,12 +27,12 @@ const int NUM_CHG_SET = (sizeof(ChargeSet) / sizeof(ChargeSet[0]));
 
 void Control_Init()
 {
-  pinMode(SupplyPowerPin, OUTPUT);
-  pinMode(BatteryPowerPin, OUTPUT);
-  pinMode(BatteryChargingPin, OUTPUT);
   digitalWrite(SupplyPowerPin, HIGH);
   digitalWrite(BatteryPowerPin, HIGH);
   digitalWrite(BatteryChargingPin, LOW);
+  pinMode(SupplyPowerPin, OUTPUT);
+  pinMode(BatteryPowerPin, OUTPUT);
+  pinMode(BatteryChargingPin, OUTPUT);
 }
 
 //***********************
@@ -49,18 +49,20 @@ void BatteryControl()
   // Battery Voltage: 12.9 100%, 12.8 90%, 12.65 80%, 12.5 70%, 12.4 60%, 12.2 50%, 12.1 40%, 12.0 30%, 11.8 20%
   // Battery Voltage charging: 13.65 100%
 
-  if (pwrMon.supplyVoltageAvg < 10.0)
+  if (pwrMon.autoControlDisable)  return;   // Disable Automatic Control (should only be used for testing)
+
+  if (pwrMon.supplyVoltageMin < 10.0)
   {
-    if (pwrMon.rpiVoltageAvg < 2.0)
+    if (pwrMon.rpiVoltageMin < 2.0)
     {
       // Scenario 1: Supply is off, pi is shutdown
       SetSupplyPower(false);
       SetBatteryPower(false);
     }
   }
-  else //if (pwrMon.supplyVoltageAvg > 10.0)
+  else // if (pwrMon.supplyVoltageMin >= 10.0)
   {
-    if (pwrMon.batteryVoltageAvg < 12.0)
+    if (pwrMon.batteryVoltageMin < 12.0)
     {
       // Scenario 2: Charge the battery after shutdown
       SetBatteryCharging(255);
@@ -126,21 +128,25 @@ void SetBatteryCharging(String args)
 void SetBatteryCharging(byte val)
 {
   pwrMon.chargingRate = val;
-  analogWrite(BatteryChargingPin, val);
+  Serial.println(val);
+  if (val > 0)
+    analogWrite(BatteryChargingPin, val);
+  else
+    digitalWrite(BatteryChargingPin, LOW);  // See https://docs.arduino.cc/language-reference/en/functions/analog-io/analogWrite/#notes-and-warnings
 }
 
 void SetBattery_mAh(String args)
 {
   long n1;
   GetNumber(args, n1);
-  pwrMon.battery_mAh = n1;
+  pwrMon.battery_mAh_measured = n1;
   ReportSensors();
 }
 
-void ShutdownPi(String args)
+void DisableAutoControl(String args)
 {
   byte n1;
   GetNumber(args, n1);
-  pwrMon.shutdownNow = n1 > 0;
+  pwrMon.autoControlDisable = n1 > 0;
   ReportSensors();
 }
