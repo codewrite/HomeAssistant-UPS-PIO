@@ -16,6 +16,8 @@ Task ReportSensorTask(SensorReportInterval, ReportSensors);
 
 void Sensor_Init()
 {
+  ReadSensors();
+  pwrMon.battery_mAh_measured = pwrMon.battery_mAh_calculated;
 }
 
 //***********************

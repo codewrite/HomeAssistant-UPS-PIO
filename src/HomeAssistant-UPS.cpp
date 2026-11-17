@@ -31,10 +31,9 @@ const int NUM_COMMANDS = sizeof(commands)/sizeof(commands[0]);
 void setup()
 {
   Serial.begin(115200);
+  Control_Init();
   pwrMon.Init();
   Sensor_Init();
-  Control_Init();
-  delay(100);
   ReportSensors();
 }
 

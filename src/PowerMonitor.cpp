@@ -54,6 +54,7 @@ void PowerMonitor::Init()
       ina3221.setShuntResistance(i, 0.1);
     }
   }
+  delay(20);    // INA3221 needs time to startup
 }
 
 void PowerMonitor::Read()

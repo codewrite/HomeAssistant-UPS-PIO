@@ -62,9 +62,9 @@ void BatteryControl()
   }
   else // if (pwrMon.supplyVoltageMin >= 10.0)
   {
-    if (pwrMon.batteryVoltageMin < 12.0)
+    if (pwrMon.batteryVoltageMin < 12.0)    // Approx 45% charge
     {
-      // Scenario 2: Charge the battery after shutdown
+      // Scenario 2: Charge the battery when voltage low
       SetBatteryCharging(255);
     }
     if (pwrMon.chargingRate == 0 || pwrMon.batteryVoltageAvg > 12.4)
